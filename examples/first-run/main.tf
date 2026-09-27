@@ -10,7 +10,7 @@ terraform {
 }
 
 resource "random_pet" "first_run" {
-  length = 4
+  length = 3
 }
 
 output "greeting" {
