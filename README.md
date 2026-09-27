@@ -13,3 +13,5 @@ pull request and a run awaiting confirmation for a push.
 The configuration declares only a `random_pet`, so nothing here is billable. Open a
 pull request touching `examples/first-run` to see the check runs and the pull
 request comment.
+
+The `webbpulse-terraform` aggregate check is required on `main`.
