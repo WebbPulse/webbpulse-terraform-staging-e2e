@@ -15,3 +15,6 @@ pull request touching `examples/first-run` to see the check runs and the pull
 request comment.
 
 The `webbpulse-terraform` aggregate check is required on `main`.
+
+A pull request that touches nothing under `examples/first-run` still gets the
+aggregate check, reported as "No runs needed", so it can merge.
