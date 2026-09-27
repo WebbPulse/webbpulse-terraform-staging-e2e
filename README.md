@@ -1,8 +1,10 @@
-# webbpulse-terraform-sandbox
+# webbpulse-terraform-staging-e2e
 
-Throwaway repository for exercising the WebbPulse Terraform GitHub integration on
-staging. The staging GitHub App `webbpulse-terraform-staging` is installed here, and
-the staging workspace `first-run` is bound to `examples/first-run`.
+Staging end-to-end test repository for WebbPulse Terraform, part of the staging
+environment alongside the `webbpulse-terraform-staging-e2e` AWS account. Load
+bearing for staging e2e, holds nothing durable. The staging GitHub App
+`webbpulse-terraform-staging` is installed here, and the staging workspace
+`first-run` is bound to `examples/first-run`.
 
 `.github/workflows/webbpulse-terraform.yml` uploads each pull request and each push
 to `main` to `api.staging.terraform.webbpulse.com`, which starts a plan-only run for a
