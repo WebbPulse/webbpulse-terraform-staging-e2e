@@ -1,0 +1,43 @@
+name: Registry publish
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      API_URL: https://api.staging.terraform.webbpulse.com
+      AUDIENCE: webbpulse-terraform
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package the module
+        run: tar --create --gzip --file "$RUNNER_TEMP/module.tar.gz" --directory registry-proof .
+      - name: Upload the tarball
+        run: |
+          set -euo pipefail
+          token="$(curl -sS --fail -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${AUDIENCE}" | jq -r .value)"
+          echo "::add-mask::${token}"
+          size="$(stat -c %s "$RUNNER_TEMP/module.tar.gz")"
+          response="$(curl -sS -X POST "${API_URL}/api/v1/registry/uploads" \
+            -H "Authorization: Bearer ${token}" -H "Content-Type: application/json" \
+            -d "{\"size_bytes\": ${size}}" -w '\n%{http_code}')"
+          status="$(tail -n1 <<<"$response")"
+          body="$(sed '$d' <<<"$response")"
+          if [ "$status" != "201" ]; then
+            echo "::error::upload request failed with ${status}: $(jq -c '{error_code, message}' <<<"$body" 2>/dev/null || echo "$body" | head -c 300)"
+            exit 1
+          fi
+          jq -c '{upload_id, module}' <<<"$body"
+          url="$(jq -r .upload_url <<<"$body")"
+          mapfile -t headers < <(jq -r '.headers | to_entries[] | "\(.key): \(.value)"' <<<"$body")
+          args=()
+          for header in "${headers[@]}"; do args+=(-H "$header"); done
+          curl -sS --fail -X PUT "${args[@]}" --upload-file "$RUNNER_TEMP/module.tar.gz" "$url" -o /dev/null
+          echo "uploaded ${size} bytes"
