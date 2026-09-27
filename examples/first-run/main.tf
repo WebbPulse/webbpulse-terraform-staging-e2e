@@ -10,7 +10,8 @@ terraform {
 }
 
 resource "random_pet" "first_run" {
-  length = 2
+  length           = 2
+  not_an_attribute = true
 }
 
 output "greeting" {
