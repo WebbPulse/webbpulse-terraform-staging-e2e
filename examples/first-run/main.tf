@@ -10,10 +10,10 @@ terraform {
 }
 
 resource "random_pet" "first_run" {
-  length = 3
+  length = 4
 }
 
 output "greeting" {
-  description = "Name the run generated, which proves the plan and the apply both reached the state bucket"
+  description = "Name the run generated, proving the plan and the apply both reached the state bucket"
   value       = random_pet.first_run.id
 }
