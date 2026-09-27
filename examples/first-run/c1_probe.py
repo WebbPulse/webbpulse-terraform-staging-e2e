@@ -1,14 +1,27 @@
 """Throwaway C1 isolation probe: reports only caller ARNs and error codes, never keys."""
 
 import json
+import re
 import urllib.request
+from pathlib import Path
 
 import boto3
 from botocore.exceptions import ClientError
 
 ACCOUNT = "870550636948"
 BUCKET = "webbpulse-terraform-staging-state"
-WORKSPACE = "ws-01M3G00GJ5VPVR3QDJV8HNBQX1"
+
+
+def own_workspace():
+    """The run's workspace id, read from the backend override the runner writes."""
+    for path in Path(".").glob("*.tf"):
+        match = re.search(r'workspace_key_prefix = "workspaces/([^/"]+)/env"', path.read_text())
+        if match:
+            return match.group(1)
+    return "unknown"
+
+
+WORKSPACE = own_workspace()
 OTHER_PREFIX = "workspaces/ws-01ZZZZZZZZZZZZZZZZZZZZZZZZ/"
 ROLES = {
     "workspace_e2e": f"arn:aws:iam::{ACCOUNT}:role/webbpulse-terraform-staging-workspace-e2e",
@@ -86,7 +99,7 @@ def task_role_session(results):
 
 def main():
     """Emit one flat JSON object of strings for the external data source."""
-    results = {}
+    results = {"own_workspace": WORKSPACE}
     probe("run_role", boto3.session.Session(region_name="us-west-2"), results)
     probe("state", boto3.session.Session(profile_name="webbpulse-state", region_name="us-west-2"), results)
     task = task_role_session(results)
