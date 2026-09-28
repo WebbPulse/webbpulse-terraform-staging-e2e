@@ -6,7 +6,15 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.6"
     }
+    external = {
+      source  = "hashicorp/external"
+      version = "~> 2.3"
+    }
   }
+}
+
+data "external" "long_plan" {
+  program = ["sh", "-c", "sleep 1320 && echo '{\"slept\":\"1320\"}'"]
 }
 
 resource "random_pet" "first_run" {
