@@ -17,3 +17,12 @@ output "greeting" {
   description = "Name the run generated, proving the plan and the apply both reached the state bucket"
   value       = random_pet.first_run.id
 }
+
+module "registry_proof" {
+  source  = "staging.terraform.webbpulse.com/WebbPulse/registry-proof/null"
+  version = "0.1.0"
+}
+
+output "registry_proof" {
+  value = module.registry_proof.name
+}
