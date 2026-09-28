@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.6"
     }
+    webbpulse = {
+      source  = "staging.terraform.webbpulse.com/WebbPulse/webbpulse"
+      version = "0.1.0-rc.1"
+    }
   }
 }
 
