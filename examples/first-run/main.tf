@@ -18,3 +18,4 @@ output "greeting" {
   value       = random_pet.first_run.id
 }
 # tf-63 proof 1
+# tf-63 proof 2
